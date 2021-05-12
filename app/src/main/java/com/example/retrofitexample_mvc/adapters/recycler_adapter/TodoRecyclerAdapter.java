@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.retrofitexample_mvc.R;
 import com.example.retrofitexample_mvc.databinding.TodoListLayoutBinding;
 import com.example.retrofitexample_mvc.models.Todo;
 
@@ -34,9 +35,9 @@ public class TodoRecyclerAdapter extends RecyclerView.Adapter<TodoRecyclerAdapte
        holder.binding.todoTitleTV.setText(todos.get(position).getTitle()); //set the title from the model
 
        if (todos.get(position).isCompleted()){ //check if the to do is completed or not
-           holder.binding.completeIV.setVisibility(View.VISIBLE);
+           holder.binding.completeIV.setImageResource(R.drawable.done);
        }else {
-           holder.binding.completeIV.setVisibility(View.GONE);
+           holder.binding.completeIV.setImageResource(R.drawable.not_done);
        }
     }
 

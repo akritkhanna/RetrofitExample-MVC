@@ -1,5 +1,6 @@
 package com.example.retrofitexample_mvc.retrofit;
 
+import com.example.retrofitexample_mvc.models.Comments;
 import com.example.retrofitexample_mvc.models.Todo;
 
 import java.util.ArrayList;
@@ -12,4 +13,7 @@ public interface ApiInterface {
 
     @GET("todos/")
     Call<ArrayList<Todo>> getTodo();
+
+    @GET("comments/")
+    Call<ArrayList<Comments>> getComments();
 }
