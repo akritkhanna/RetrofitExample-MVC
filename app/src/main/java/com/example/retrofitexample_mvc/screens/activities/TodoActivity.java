@@ -2,8 +2,10 @@ package com.example.retrofitexample_mvc.screens.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -13,6 +15,7 @@ import com.example.retrofitexample_mvc.databinding.ActivityTodoBinding;
 import com.example.retrofitexample_mvc.models.Todo;
 import com.example.retrofitexample_mvc.retrofit.ApiInterface;
 import com.example.retrofitexample_mvc.retrofit.RestClient;
+import com.example.retrofitexample_mvc.viewModel.ToDoViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +27,8 @@ import retrofit2.Response;
 public class TodoActivity extends AppCompatActivity {
 
     private ActivityTodoBinding binding;
-    private ApiInterface apiInterface;
-    private List<Todo> todos;
-    private TodoRecyclerAdapter todoRecyclerAdapter;
+    private static final String TAG = "TodoActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,36 +36,19 @@ public class TodoActivity extends AppCompatActivity {
         binding = ActivityTodoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        todos = new ArrayList<>(); //initialize an empty list
-        todoRecyclerAdapter = new TodoRecyclerAdapter(todos); // initialize your adapter with empty list
-        binding.todoRV.setAdapter(todoRecyclerAdapter); //set your adapter
+        List<Todo> todos = new ArrayList<>();
 
+        ToDoViewModel viewModel = new ViewModelProvider(this).get(ToDoViewModel.class);
+        TodoRecyclerAdapter todoRecyclerAdapter = new TodoRecyclerAdapter(todos);
+        binding.todoRV.setAdapter(todoRecyclerAdapter);
 
-        apiInterface = new RestClient().getClient().create(ApiInterface.class); //map your rest client with your api calls
-
-        //Call the api
-        getTodo();
-
-    }
-
-    private void getTodo(){
-        binding.progressBar.setVisibility(View.VISIBLE); //show progress bar
-        apiInterface.getTodo().enqueue(new Callback<ArrayList<Todo>>() {
-            @Override
-            public void onResponse(Call<ArrayList<Todo>> call, Response<ArrayList<Todo>> response) {
-                binding.progressBar.setVisibility(View.GONE); //remove progress bar when the api has response
-                if (response.isSuccessful()){
-                    todos.addAll(response.body());//if the api call is successful then populate your empty list.
-                    todoRecyclerAdapter.notifyDataSetChanged();   //now notify your adapter that list has items so load them.
-                }else {
-                    Toast.makeText(TodoActivity.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<Todo>> call, Throwable t) {
-
+        viewModel.todoData.observe(this, todosData -> {
+            if (todosData != null){
+                Log.d(TAG, "onCreate: called");
+                todos.addAll(todosData);
+                todoRecyclerAdapter.notifyDataSetChanged();
             }
         });
+
     }
 }
